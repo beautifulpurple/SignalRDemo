@@ -1,0 +1,152 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+    <link href="~/Content/table.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.2.2.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script>
+
+       // Tips： 至关重要，没用layout模板的页面, 客户端函数不能写在$(function ())里面，否则，服务器推送时找不到对应的函数
+
+       // $(function () {
+        var gluehub = $.connection.gluehub;
+            gluehub.client.Refresh = function (nowtime) {
+                writeMsg(nowtime);
+            };
+            //写消息
+            function writeMsg(nowtime) {
+                $("#nowtime").text(nowtime);
+            }
+
+            // 开始连接
+        $.connection.hub.start().done(function () {
+            //方式 1.在后台利用定时器的方式，获取变化数据推送到前端
+               // gluehub.server.getdata();
+            //方式 2.利用sqldependency 当数据表发生变化时，推送数据到前端
+                gluehub.server.getdatabysqldependency();
+            });
+
+            //=====================================表格滚动效率====================================
+            gluehub.client.RefreshTime = function (str) {
+                $("#nowtime").text(str);
+            };
+        gluehub.client.RefreshTable = function (dt) {
+                LoadData(dt);
+            };
+            var MyMarhq = '';
+            var speedhq = 50; // 数值越大越慢
+
+            function LoadData(dt) {
+
+                clearInterval(MyMarhq);
+                $('.tbl-body tbody').empty();
+                $('.tbl-header tbody').empty();
+                var str = '';
+                var Items = dt;
+                $.each(Items, function (i, item) {
+                    str = '<tr>' +
+                        '<td>' + item.Id + '</td>' +
+                        '<td>' + item.BarCode + '</td>' +
+                        '<td>' + item.ProcessName + '</td>' +
+                        '<td>' + item.EPNO + '</td>' +
+                        '<td>' + item.OperateTime + '</td>' +
+                        '<td>' + item.OperateState + '</td>' +
+                        '<td>' + item.NormalExpirationTime_Surplus + '</td>' +
+                        '<td>' + item.AllExpirationTime_Surplus + '</td>' +
+                        '</tr>'
+
+                    $('.tbl-body tbody').append(str);
+                    $('.tbl-header tbody').append(str);
+                });
+                if (Items.length > 10) {
+                    $('.tbl-body tbody').html($('.tbl-body tbody').html() + $('.tbl-body tbody').html());
+                    $('.tbl-body').css('top', '0');
+                    var tblTop = 0;
+                    var outerHeight = $('.tbl-body tbody').find("tr").outerHeight();
+                    function Marqueehq() {
+                        if (tblTop <= -outerHeight * Items.length) {
+                            tblTop = 0;
+                        } else {
+                            tblTop -= 1;
+                        }
+                        $('.tbl-body').css('top', tblTop + 'px');
+                    }
+
+                }
+
+                MyMarhq = setInterval(Marqueehq, speedhq);
+                // 鼠标移上去取消事件
+                $(".tbl-header tbody").hover(function () {
+                    clearInterval(MyMarhq);
+                }, function () {
+                    clearInterval(MyMarhq);
+                    MyMarhq = setInterval(Marqueehq, speedhq);
+                })
+            }
+
+
+
+     //  });
+    </script>
+</head>
+<body>
+    <div style="">
+        @*<div style="margin-left:42%;font-size:xx-large;font-weight:700;">看板SignalR技术</div>*@
+        <div id="nowtime" style="float:right;">显示当前时间</div>
+    </div>
+
+    <div class="tablebox" style="clear:right;position:fixed; bottom:0">
+        <div class="tbl-header">
+            <table border="0" cellspacing="0" cellpadding="0">
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>SN</th>
+                        <th>工序</th>
+                        <th>机台编号</th>
+                        <th>开始使用时间</th>
+                        <th>管控状态</th>
+                        <th>常温剩余时间(分钟)</th>
+                        <th>保质期剩余时间(分钟)</th>
+                    </tr>
+                </thead>
+                <tbody style="opacity:0;"></tbody>
+            </table>
+        </div>
+
+        <div class="tbl-body">
+            <table border="0" cellspacing="0" cellpadding="0">
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>SN</th>
+                        <th>工序</th>
+                        <th>机台编号</th>
+                        <th>开始使用时间</th>
+                        <th>管控状态</th>
+                        <th>常温剩余时间(分钟)</th>
+                        <th>保质期剩余时间(分钟)</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+
+

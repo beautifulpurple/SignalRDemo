@@ -1,0 +1,56 @@
+﻿.tablebox {
+    min-height: 500px;
+    height:90%;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    background-color: rgba(6,26,103,1);
+}
+
+.tbl-header {
+    width: 90%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 999;
+    margin: 0;
+}
+
+.tbl-body {
+    margin: 0;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+}
+
+.tablebox table {
+    width: 100%;
+}
+
+    .tablebox table th,
+    .tablebox table td {
+        font-size: 16px;
+        color: #7ca6f4;
+        line-height: 24px;
+        text-align: center;
+    }
+
+    .tablebox table tr th {
+        background-color: #1f1f9c;
+        cursor: pointer;
+    }
+
+    .tablebox table tr td {
+        background-color: transparent;
+    }
+
+.tbl-body tr:nth-child(even) td, .tbl-body1 tr:nth-child(even) td {
+    background-color: rgba(31, 31, 156, .5);
+}
+
+.tablebox table tr td span,
+.tablebox table tr td span {
+    font-size: 16px;
+}
